@@ -107,6 +107,14 @@ async function run() {
       res.send(result);
     });
 
+    // load the specific order from the order collection
+    app.get("/cart/:email", async (req, res) => {
+      const email = req.params.email;
+      const filter = { email: email };
+      const result = await orderCollection.find(filter).toArray();
+      res.send(result);
+    });
+
     console.log("connected");
   } finally {
   }
