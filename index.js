@@ -72,42 +72,55 @@ async function run() {
       res.send(result);
     });
 
-    // decrease  the quantity value of the order
-    app.put("/order/decrease", async (req, res) => {
-      const foodId = req.body.id;
-      const email = req.body.email;
-      const quantity = req.body.quantity - 1;
-      const filter = { id: foodId, email: email };
-      const options = { upsert: true };
-
-      const updateDoc = {
-        $set: {
-          quantity: quantity,
-        },
-      };
-
-      const result = await orderCollection.updateOne(
-        filter,
-        updateDoc,
-        options
-      );
-      res.send(result);
-    });
-
-    // Remove a order from the order collection
-    app.delete("/order", async (req, res) => {
-      const orderId = req.body.id;
-      const email = req.body.email;
-      const filter = { id: orderId, email: email };
-      const result = await orderCollection.deleteOne(filter);
-      res.send(result);
-    });
-
     // load the specific order from the order collection
     app.get("/cart/:email", async (req, res) => {
       const email = req.params.email;
       const filter = { email: email };
       const result = await orderCollection.find(filter).toArray();
+      res.send(result);
+    });
+
+    // get a single cart Item
+    app.get("/cart/item/:id", async (req, res) => {
+      const foodId = req.params.id;
+      const filter = { _id: ObjectId(foodId) };
+      const result = await orderCollection.findOne(filter);
+      res.send(result);
+    });
+
+    // increase the quantity from cart
+    app.put("/cart/quantity", async (req, res) => {
+      const foodId = req.body.id;
+      const quantity = req.body.quantity;
+      const filter = { _id: ObjectId(foodId) };
+      const updateDoc = {
+        $set: {
+          quantity: quantity,
+        },
+      };
+      const result = await orderCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    // decrease the quantity from cart
+    app.put("/cart/quantity/decrease", async (req, res) => {
+      const foodId = req.body.id;
+      const quantity = req.body.quantity;
+      const filter = { _id: ObjectId(foodId) };
+      const updateDoc = {
+        $set: {
+          quantity: quantity,
+        },
+      };
+      const result = await orderCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    // Remove a item from the cart
+    app.delete("/cart/delete/:id", async (req, res) => {
+      const foodId = req.params.id;
+      const filter = { _id: ObjectId(foodId) };
+      const result = await orderCollection.deleteOne(filter);
       res.send(result);
     });
 
