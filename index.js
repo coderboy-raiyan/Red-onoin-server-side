@@ -45,6 +45,7 @@ async function run() {
       const filter = { email: email };
       const result = await orderCollection.find(filter).toArray();
       res.send(result);
+      // console.log(email);
     });
 
     // add a order item
@@ -54,13 +55,12 @@ async function run() {
       res.send(result);
     });
 
-    // update increasing the quantity value of the order
+    // update increasing the quantity value of the foodDetails  order
     app.put("/order/update", async (req, res) => {
-      const foodId = req.body.id;
+      const foodId = req.body.orderId;
       const email = req.body.email;
-      const quantity = req.body.quantity + 1;
-      const filter = { id: foodId, email: email };
-      const options = { upsert: true };
+      const quantity = req.body.quantity;
+      const filter = { orderId: foodId, email: email };
 
       const updateDoc = {
         $set: {
@@ -68,15 +68,11 @@ async function run() {
         },
       };
 
-      const result = await orderCollection.updateOne(
-        filter,
-        updateDoc,
-        options
-      );
+      const result = await orderCollection.updateOne(filter, updateDoc);
       res.send(result);
     });
 
-    // decrease increasing the quantity value of the order
+    // decrease  the quantity value of the order
     app.put("/order/decrease", async (req, res) => {
       const foodId = req.body.id;
       const email = req.body.email;
