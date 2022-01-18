@@ -24,6 +24,7 @@ async function run() {
     const database = client.db("red_onion");
     const orderCollection = database.collection("orders");
     const foodCollection = database.collection("foods");
+    const userCollection = database.collection("users");
 
     // get all foods
     app.get("/foods", async (req, res) => {
@@ -121,6 +122,26 @@ async function run() {
       const foodId = req.params.id;
       const filter = { _id: ObjectId(foodId) };
       const result = await orderCollection.deleteOne(filter);
+      res.send(result);
+    });
+
+    // save the user Data if not exists
+    app.post("/users/register", async (req, res) => {
+      const userData = req.body;
+      const result = await userCollection.insertOne(userData);
+      res.send(result);
+    });
+
+    // save the user Data if exists
+    app.put("/users/signIn", async (req, res) => {
+      const userData = req.body;
+      const filter = { email: userData.email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: userData,
+      };
+
+      const result = await userCollection.updateOne(filter, updateDoc, options);
       res.send(result);
     });
 
